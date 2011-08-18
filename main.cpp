@@ -1,12 +1,17 @@
 /* malloc example: string generator*/
 #include <ctime>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <sys/time.h>
+#include <unistd.h>
+#include <vector>
 
+using std::cout;
+using std::endl;
 using std::string;
 
 class Timer
@@ -117,23 +122,37 @@ std::ostream& operator<<(std::ostream& out, CPUTimer& obj)
   return out;
 }
 
-int main ()
+int main (int argc, char **argv)
 {
   int i,n;
-  char * buffer;
+  //char * buffer;
 
-  printf ("How long do you want the string? ");
-  scanf ("%d", &i);
+  cout << "How long do you want the string? ";
+  std::cin >> i;
 
-  buffer = (char*) malloc (i+1);
-  if (buffer==NULL) exit (1);
+  CPUTimer timer;
+  //buffer = (char*) malloc (i);
+  //if (buffer==NULL) exit (1);
+  std::vector<char> * buffer = new std::vector<char>();
+  buffer->resize(i);
 
-  for (n=0; n<i; n++)
-    buffer[n]=rand()%26+'a';
-  buffer[i]='\0';
+  cout << "Allocate: " << timer << endl;
+  sleep(5);
+  timer.reset();
 
-  printf ("Random string: %s\n",buffer);
-  free (buffer);
+  //for (n=0; n<i; n++)
+  //buffer[n]=rand()%26+'a';
+  //buffer[i]='\0';
+
+  cout << "Fill: " << timer << endl;
+  timer.reset();
+
+  //printf ("Random string: %s\n",buffer);
+  //free (buffer);
+  delete buffer;
+
+  cout << "Free: " << timer << endl;
+  timer.reset();
 
   return 0;
 }
