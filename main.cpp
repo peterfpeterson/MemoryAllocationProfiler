@@ -41,6 +41,7 @@ public:
     gettimeofday(&now,0);
     const float retval = float(now.tv_sec - m_start.tv_sec) +
       float(static_cast<float>(now.tv_usec - m_start.tv_usec)/1e6);
+    return retval;
   }
 
   string str() const
