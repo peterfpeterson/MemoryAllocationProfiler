@@ -16,99 +16,84 @@ using std::cout;
 using std::endl;
 using std::string;
 
-class Timer
-{
+class Timer {
 public:
-  Timer()
-  {
-    gettimeofday(&m_start,0);
-  }
+  Timer() { gettimeofday(&m_start, 0); }
 
-  ~Timer(){}
+  ~Timer() {}
 
-  float elapsed(bool reset = true)
-  {
+  float elapsed(bool reset = true) {
     float retval = this->elapsed_no_reset();
 
-    if (reset) this->reset();
+    if (reset)
+      this->reset();
 
     return retval;
   }
 
-  float elapsed_no_reset() const
-  {
+  float elapsed_no_reset() const {
     timeval now;
-    gettimeofday(&now,0);
-    const float retval = float(now.tv_sec - m_start.tv_sec) +
-      float(static_cast<float>(now.tv_usec - m_start.tv_usec)/1e6);
+    gettimeofday(&now, 0);
+    const float retval =
+        float(now.tv_sec - m_start.tv_sec) + float(static_cast<float>(now.tv_usec - m_start.tv_usec) / 1e6);
     return retval;
   }
 
-  string str() const
-  {
+  string str() const {
     std::stringstream buffer;
     buffer << this->elapsed_no_reset() << "s";
     return buffer.str();
   }
 
-  void reset()
-  {
+  void reset() {
     timeval now;
-    gettimeofday(&now,0);
+    gettimeofday(&now, 0);
     m_start = now;
   }
 
 private:
-  timeval  m_start;
+  timeval m_start;
 };
 
-std::ostream& operator<<(std::ostream& out, const Timer& obj)
-{
+std::ostream &operator<<(std::ostream &out, const Timer &obj) {
   out << obj.str();
   return out;
 }
 
-class CPUTimer
-{
+class CPUTimer {
 public:
-  CPUTimer()
-  {
-    this->reset();
-  }
+  CPUTimer() { this->reset(); }
 
   ~CPUTimer() {}
 
-  float elapsed(bool doReset=true)
-  {
+  float elapsed(bool doReset = true) {
     float retval = 0;
     clock_t end = clock();
     retval = ((float)(end - m_start)) / CLOCKS_PER_SEC;
-    if (doReset) this->reset();
+    if (doReset)
+      this->reset();
 
     return retval;
   }
 
-  void reset()
-  {
+  void reset() {
     m_start = clock();
     m_wallClockTime.reset();
   }
 
-  float CPUfraction(bool doReset=true)
-  {
+  float CPUfraction(bool doReset = true) {
     // Get the wall-clock time without resetting.
     double wallTime = m_wallClockTime.elapsed(false);
     double cpuTime = elapsed(false);
-    if (doReset) this->reset();
+    if (doReset)
+      this->reset();
     return static_cast<float>((cpuTime / wallTime));
   }
 
-  string str()
-  {
+  string str() {
     std::stringstream buffer;
-    buffer << std::fixed  << std::setw(7) << std::setprecision(4)
-	   << m_wallClockTime << ", CPU " << std::setprecision(2)
-	   << this->CPUfraction(false);
+    buffer << std::fixed << std::setw(7) << std::setprecision(4) << m_wallClockTime << ", CPU " << std::setprecision(2)
+           << this->CPUfraction(false);
     this->reset();
     return buffer.str();
   }
@@ -116,11 +101,9 @@ public:
 private:
   clock_t m_start;
   Timer m_wallClockTime;
-
 };
 
-std::ostream& operator<<(std::ostream& out, CPUTimer& obj)
-{
+std::ostream &operator<<(std::ostream &out, CPUTimer &obj) {
   out << obj.str();
   return out;
 }
@@ -133,51 +116,47 @@ std::ostream& operator<<(std::ostream& out, CPUTimer& obj)
 //
 // On failure, returns 0.0, 0.0
 
-void process_mem_usage(double& vm_usage, double& resident_set)
-{
-   using std::ios_base;
-   using std::ifstream;
-   using std::string;
+void process_mem_usage(double &vm_usage, double &resident_set) {
+  using std::ifstream;
+  using std::ios_base;
+  using std::string;
 
-   vm_usage     = 0.0;
-   resident_set = 0.0;
+  vm_usage = 0.0;
+  resident_set = 0.0;
 
-   // 'file' stat seems to give the most reliable results
-   //
-   ifstream stat_stream("/proc/self/stat",ios_base::in);
+  // 'file' stat seems to give the most reliable results
+  //
+  ifstream stat_stream("/proc/self/stat", ios_base::in);
 
-   // dummy vars for leading entries in stat that we don't care about
-   //
-   string pid, comm, state, ppid, pgrp, session, tty_nr;
-   string tpgid, flags, minflt, cminflt, majflt, cmajflt;
-   string utime, stime, cutime, cstime, priority, nice;
-   string O, itrealvalue, starttime;
+  // dummy vars for leading entries in stat that we don't care about
+  //
+  string pid, comm, state, ppid, pgrp, session, tty_nr;
+  string tpgid, flags, minflt, cminflt, majflt, cmajflt;
+  string utime, stime, cutime, cstime, priority, nice;
+  string O, itrealvalue, starttime;
 
-   // the two fields we want
-   //
-   unsigned long vsize;
-   long rss;
+  // the two fields we want
+  //
+  unsigned long vsize;
+  long rss;
 
-   stat_stream >> pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr
-               >> tpgid >> flags >> minflt >> cminflt >> majflt >> cmajflt
-               >> utime >> stime >> cutime >> cstime >> priority >> nice
-               >> O >> itrealvalue >> starttime >> vsize >> rss; // don't care about the rest
+  stat_stream >> pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr >> tpgid >> flags >> minflt >> cminflt >>
+      majflt >> cmajflt >> utime >> stime >> cutime >> cstime >> priority >> nice >> O >> itrealvalue >> starttime >>
+      vsize >> rss; // don't care about the rest
 
-   stat_stream.close();
+  stat_stream.close();
 
-   long page_size_kb = sysconf(_SC_PAGE_SIZE) / 1024; // in case x86-64 is configured to use 2MB pages
-   vm_usage     = vsize / 1024.0;
-   resident_set = rss * page_size_kb;
+  long page_size_kb = sysconf(_SC_PAGE_SIZE) / 1024; // in case x86-64 is configured to use 2MB pages
+  vm_usage = vsize / 1024.0;
+  resident_set = rss * page_size_kb;
 }
 
-
-int main (int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   int sleeptime = 2;
   double rss, vm;
 
-  std::size_t i,n;
-  //char * buffer;
+  std::size_t i, n;
+  // char * buffer;
 
   /*
   cout << "How long do you want the string? ";
@@ -186,35 +165,35 @@ int main (int argc, char *argv[])
   i = 3000000000;
 
   CPUTimer timer;
-  //buffer = (char*) malloc (i);
-  //if (buffer==NULL) exit (1);
-  std::vector<uint8_t> * buffer = new std::vector<uint8_t>();
+  // buffer = (char*) malloc (i);
+  // if (buffer==NULL) exit (1);
+  std::vector<uint8_t> *buffer = new std::vector<uint8_t>();
   buffer->resize(i);
 
   cout << "Allocate: " << timer << endl;
   process_mem_usage(vm, rss);
-  cout << "          VM: " << (vm/1024.) << "MB RSS: " << (rss/1024.) << "MB" << endl;
+  cout << "          VM: " << (vm / 1024.) << "MB RSS: " << (rss / 1024.) << "MB" << endl;
 
   sleep(sleeptime);
   timer.reset();
 
-  for (n=0; n<i; n++)
-    buffer->push_back(0);//static_cast<uint8_t>(rand()%256));
+  for (n = 0; n < i; n++)
+    buffer->push_back(0); // static_cast<uint8_t>(rand()%256));
 
   cout << "Fill: " << timer << endl;
   process_mem_usage(vm, rss);
-  cout << "      VM: " << (vm/1024.) << "MB RSS: " << (rss/1024.) << "MB" << endl;
+  cout << "      VM: " << (vm / 1024.) << "MB RSS: " << (rss / 1024.) << "MB" << endl;
   sleep(sleeptime);
   timer.reset();
 
-  //printf ("Random string: %s\n",buffer);
-  //free (buffer);
+  // printf ("Random string: %s\n",buffer);
+  // free (buffer);
 
   delete buffer;
 
   cout << "Free: " << timer << endl;
   process_mem_usage(vm, rss);
-  cout << "      VM: " << (vm/1024.) << "MB RSS: " << (rss/1024.) << "MB" << endl;
+  cout << "      VM: " << (vm / 1024.) << "MB RSS: " << (rss / 1024.) << "MB" << endl;
   timer.reset();
 
   /*

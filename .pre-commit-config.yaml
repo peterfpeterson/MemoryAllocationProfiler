@@ -12,10 +12,12 @@ repos:
       args: [--allow-multiple-documents]
     - id: end-of-file-fixer
     - id: trailing-whitespace
-- repo: https://github.com/codespell-project/codespell
-  rev: v2.3.0
+
+- repo: https://github.com/mantidproject/pre-commit-hooks.git
+  rev: 2f8a4f22629d0d23332f621df9de93751331161b
   hooks:
-    - id: codespell
+    - id: clang-format
+
 - repo: https://github.com/cheshirekow/cmake-format-precommit
   rev: v0.6.13
   hooks:
@@ -24,5 +26,8 @@ repos:
           (?x)^(
           ^cmake/FindNexus.cmake$ # this is a copy from mantid
           )$
-
     #- id: cmake-lint <- not ready yet
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.3.0
+  hooks:
+    - id: codespell
