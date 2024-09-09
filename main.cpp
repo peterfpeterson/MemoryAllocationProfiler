@@ -25,7 +25,7 @@ public:
   }
 
   ~Timer(){}
-  
+
   float elapsed(bool reset = true)
   {
     float retval = this->elapsed_no_reset();
@@ -39,7 +39,7 @@ public:
   {
     timeval now;
     gettimeofday(&now,0);
-    const float retval = float(now.tv_sec - m_start.tv_sec) + 
+    const float retval = float(now.tv_sec - m_start.tv_sec) +
       float(static_cast<float>(now.tv_usec - m_start.tv_usec)/1e6);
   }
 
@@ -56,7 +56,7 @@ public:
     gettimeofday(&now,0);
     m_start = now;
   }
-  
+
 private:
   timeval  m_start;
 };
@@ -208,7 +208,7 @@ int main (int argc, char *argv[])
 
   //printf ("Random string: %s\n",buffer);
   //free (buffer);
-  
+
   delete buffer;
 
   cout << "Free: " << timer << endl;
