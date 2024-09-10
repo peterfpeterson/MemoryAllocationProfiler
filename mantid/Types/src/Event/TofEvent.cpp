@@ -37,7 +37,7 @@ bool TofEvent::operator>(const TofEvent &rhs) const { return (this->m_tof > rhs.
  */
 bool TofEvent::equals(const TofEvent &rhs, const double tolTof, const int64_t tolPulse) const {
   // compare m_tof
-  if (std::fabs(this->m_tof - rhs.m_tof) > tolTof)
+  if (std::abs(this->m_tof - rhs.m_tof) > tolTof)
     return false;
   // then it is just if the pulse-times are equal
   return (this->m_pulsetime.equals(rhs.m_pulsetime, tolPulse));
@@ -58,7 +58,7 @@ Mantid::Types::Core::DateAndTime TofEvent::pulseTOFTimeAtSample(const double &fa
  * @param event :: TofEvent to output to the stream
  */
 ostream &operator<<(ostream &os, const TofEvent &event) {
-  os << event.m_tof << "," << event.m_pulsetime.toSimpleString();
+  os << event.m_tof ; //<< "," << event.m_pulsetime.toSimpleString();
   return os;
 }
 } // namespace Mantid::Types::Event
