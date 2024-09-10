@@ -34,7 +34,7 @@ public:
   float elapsed_no_reset() const {
     timeval now;
     gettimeofday(&now, 0);
-    const float retval =
+    float const retval =
         float(now.tv_sec - m_start.tv_sec) + float(static_cast<float>(now.tv_usec - m_start.tv_usec) / 1e6);
     return retval;
   }
@@ -55,7 +55,7 @@ private:
   timeval m_start;
 };
 
-std::ostream &operator<<(std::ostream &out, const Timer &obj) {
+std::ostream &operator<<(std::ostream &out, Timer const &obj) {
   out << obj.str();
   return out;
 }

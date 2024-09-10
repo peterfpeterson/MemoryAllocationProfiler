@@ -13,8 +13,8 @@ repos:
     - id: end-of-file-fixer
     - id: trailing-whitespace
 
-- repo: https://github.com/mantidproject/pre-commit-hooks.git
-  rev: 2f8a4f22629d0d23332f621df9de93751331161b
+- repo: https://github.com/pre-commit/mirrors-clang-format
+  rev: v18.1.8
   hooks:
     - id: clang-format
 

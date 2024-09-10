@@ -4,5 +4,5 @@ BasedOnStyle: LLVM
 ---
 Language: Cpp
 ColumnLimit: 120
-#QualifierAlignment: Right # not until clang-format v14
+QualifierAlignment: Right # not until clang-format v14
 ...

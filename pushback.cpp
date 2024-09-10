@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <vector>
 
-void withArray(std::vector<uint8_t> &vec, const std::size_t size) {
+void withArray(std::vector<uint8_t> &vec, std::size_t const size) {
   std::cout << "withArray" << std::endl;
   uint8_t *array = new uint8_t[size];
   for (std::size_t i = 0; i < size; ++i)
@@ -14,14 +14,14 @@ void withArray(std::vector<uint8_t> &vec, const std::size_t size) {
   delete array;
 }
 
-void withIndex(std::vector<uint8_t> &vec, const std::size_t size) {
+void withIndex(std::vector<uint8_t> &vec, std::size_t const size) {
   std::cout << "withIndex" << std::endl;
   vec.resize(size);
   for (std::size_t i = 0; i < size; ++i)
     vec[i] = 0;
 }
 
-void withPushback(std::vector<uint8_t> &vec, const std::size_t size) {
+void withPushback(std::vector<uint8_t> &vec, std::size_t const size) {
   std::cout << "withPushback" << std::endl;
   vec.reserve(size);
   for (std::size_t i = 0; i < size; ++i)
