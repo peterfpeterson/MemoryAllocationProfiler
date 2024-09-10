@@ -5,7 +5,6 @@
 //   Institut Laue - Langevin & CSNS, Institute of High Energy Physics, CAS
 // SPDX - License - Identifier: GPL - 3.0 +
 #include "MantidKernel/Memory.h"
-#include "MantidKernel/Logger.h"
 #include "MantidKernel/System.h"
 
 #include <cstdio>
@@ -33,10 +32,6 @@ using std::size_t;
 using std::string;
 
 namespace Mantid::Kernel {
-namespace {
-/// static logger object
-Logger g_log("Memory");
-} // namespace
 
 /// Utility function to convert memory in kiB into easy to read units.
 template <typename TYPE> string memToString(const TYPE mem_in_kiB) {
@@ -223,52 +218,9 @@ void MemoryStats::process_mem_system(size_t &sys_avail, size_t &sys_total) {
   // sys_avail will overflow the unsigned int.
   if (unusedReserved < 0)
     unusedReserved = 0;
-  // g_log.debug() << "Linux - Adding reserved but unused memory of " <<
-  // unusedReserved << " KB\n";
   sys_avail += unusedReserved;
-
-#elif __APPLE__
-  // Get the total RAM of the system
-  uint64_t totalmem;
-  size_t len = sizeof(totalmem);
-  // Gives system memory in bytes
-  int err = sysctlbyname("hw.memsize", &totalmem, &len, nullptr, 0);
-  if (err)
-    g_log.warning("Unable to obtain memory of system");
-  sys_total = totalmem / 1024;
-
-  mach_port_t port = mach_host_self();
-  // Need to find out the system page size for next part
-  vm_size_t pageSize;
-  host_page_size(port, &pageSize);
-
-  // Now get the amount of free memory (=free+inactive memory)
-  vm_statistics vmStats;
-  mach_msg_type_number_t count;
-  count = sizeof(vm_statistics) / sizeof(natural_t);
-  err = host_statistics(port, HOST_VM_INFO, reinterpret_cast<host_info_t>(&vmStats), &count);
-  if (err)
-    g_log.warning("Unable to obtain memory statistics for this Mac.");
-  sys_avail = pageSize * (vmStats.free_count + vmStats.inactive_count) / 1024;
-
-  // Now add in reserved but unused memory as reported by malloc
-  const size_t unusedReserved = mstats().bytes_free / 1024;
-  g_log.debug() << "Mac - Adding reserved but unused memory of " << unusedReserved << " KB\n";
-  sys_avail += unusedReserved;
-#elif _WIN32
-  GlobalMemoryStatusEx(&memStatus);
-  if (memStatus.ullTotalPhys < memStatus.ullTotalVirtual) {
-    sys_avail = static_cast<size_t>(memStatus.ullAvailPhys / 1024);
-    sys_total = static_cast<size_t>(memStatus.ullTotalPhys / 1024);
-  } else // All virtual memory will be physical, but a process cannot have more
-         // than TotalVirtual.
-  {
-    sys_avail = static_cast<size_t>(memStatus.ullAvailVirtual / 1024);
-    sys_total = static_cast<size_t>(memStatus.ullTotalVirtual / 1024);
-  }
 #endif
 
-  g_log.debug() << "Memory: " << sys_avail << " (free), " << sys_total << " (total).\n";
 }
 
 /**
@@ -300,21 +252,6 @@ void MemoryOptions::initAllocatorOptions() {
    * the system page size.
    */
   mallopt(M_MMAP_THRESHOLD, 8 * 4096);
-#elif _WIN32
-  Logger memOptLogger("MemoryOptions");
-  // Try to enable the Low Fragmentation Heap for all heaps
-  // Bit of a brute force approach, but don't know which heap workspace data
-  // ends up on
-  HANDLE hHeaps[1025];
-  // Get the number of heaps
-  const DWORD numHeap = GetProcessHeaps(1024, hHeaps);
-  memOptLogger.debug() << "Number of heaps: " << numHeap << "\n"; // GetProcessHeaps(0, NULL) << "\n";
-  ULONG ulEnableLFH = 2;                                          // 2 = Low Fragmentation Heap
-  for (DWORD i = 0; i < numHeap; i++) {
-    if (!HeapSetInformation(hHeaps[i], HeapCompatibilityInformation, &ulEnableLFH, sizeof(ulEnableLFH))) {
-      memOptLogger.debug() << "Failed to enable the LFH for heap " << i << "\n";
-    }
-  }
 #endif
   initialized = true;
 }
