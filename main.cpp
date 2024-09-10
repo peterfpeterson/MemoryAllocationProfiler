@@ -1,4 +1,5 @@
 /* malloc example: string generator*/
+#include <MantidKernel/Timer.h>
 #include <ctime>
 #include <fstream>
 #include <iomanip>
@@ -12,53 +13,10 @@
 #include <unistd.h>
 #include <vector>
 
+using Mantid::Kernel::Timer;
 using std::cout;
 using std::endl;
 using std::string;
-
-class Timer {
-public:
-  Timer() { gettimeofday(&m_start, 0); }
-
-  ~Timer() {}
-
-  float elapsed(bool reset = true) {
-    float retval = this->elapsed_no_reset();
-
-    if (reset)
-      this->reset();
-
-    return retval;
-  }
-
-  float elapsed_no_reset() const {
-    timeval now;
-    gettimeofday(&now, 0);
-    float const retval =
-        float(now.tv_sec - m_start.tv_sec) + float(static_cast<float>(now.tv_usec - m_start.tv_usec) / 1e6);
-    return retval;
-  }
-
-  string str() const {
-    std::stringstream buffer;
-    buffer << this->elapsed_no_reset() << "s";
-    return buffer.str();
-  }
-
-  void reset() {
-    timeval now;
-    gettimeofday(&now, 0);
-    m_start = now;
-  }
-
-private:
-  timeval m_start;
-};
-
-std::ostream &operator<<(std::ostream &out, Timer const &obj) {
-  out << obj.str();
-  return out;
-}
 
 class CPUTimer {
 public:

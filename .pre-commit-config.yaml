@@ -17,6 +17,10 @@ repos:
   rev: v18.1.8
   hooks:
     - id: clang-format
+      exclude: |
+          (?x)^(
+          ^mantid/.+ # this is a copy from mantid
+          )$
 
 - repo: https://github.com/cheshirekow/cmake-format-precommit
   rev: v0.6.13
@@ -31,3 +35,7 @@ repos:
   rev: v2.3.0
   hooks:
     - id: codespell
+      exclude: |
+          (?x)^(
+          ^mantid/.+ # this is a copy from mantid
+          )$
