@@ -1,4 +1,5 @@
 /* malloc example: string generator*/
+#include <MantidKernel/CPUTimer.h>
 #include <MantidKernel/Timer.h>
 #include <ctime>
 #include <fstream>
@@ -13,58 +14,11 @@
 #include <unistd.h>
 #include <vector>
 
+using Mantid::Kernel::CPUTimer;
 using Mantid::Kernel::Timer;
 using std::cout;
 using std::endl;
 using std::string;
-
-class CPUTimer {
-public:
-  CPUTimer() { this->reset(); }
-
-  ~CPUTimer() {}
-
-  float elapsed(bool doReset = true) {
-    float retval = 0;
-    clock_t end = clock();
-    retval = ((float)(end - m_start)) / CLOCKS_PER_SEC;
-    if (doReset)
-      this->reset();
-
-    return retval;
-  }
-
-  void reset() {
-    m_start = clock();
-    m_wallClockTime.reset();
-  }
-
-  float CPUfraction(bool doReset = true) {
-    // Get the wall-clock time without resetting.
-    double wallTime = m_wallClockTime.elapsed(false);
-    double cpuTime = elapsed(false);
-    if (doReset)
-      this->reset();
-    return static_cast<float>((cpuTime / wallTime));
-  }
-
-  string str() {
-    std::stringstream buffer;
-    buffer << std::fixed << std::setw(7) << std::setprecision(4) << m_wallClockTime << ", CPU " << std::setprecision(2)
-           << this->CPUfraction(false);
-    this->reset();
-    return buffer.str();
-  }
-
-private:
-  clock_t m_start;
-  Timer m_wallClockTime;
-};
-
-std::ostream &operator<<(std::ostream &out, CPUTimer &obj) {
-  out << obj.str();
-  return out;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 //
