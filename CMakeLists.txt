@@ -20,9 +20,22 @@ set(KERNEL_FILES
     mantid/Kernel/src/Memory.cpp
     mantid/Kernel/src/Timer.cpp)
 
-add_executable(simplevec simplevec.cpp ${KERNEL_FILES})
+set(TYPES_FILES
+    mantid/Types/inc/MantidTypes/Core/DateAndTime.h
+    mantid/Types/inc/MantidTypes/Core/DateAndTimeHelpers.h
+    mantid/Types/inc/MantidTypes/DllConfig.h
+    mantid/Types/inc/MantidTypes/Event/TofEvent.h
+    mantid/Types/src/Core/DateAndTime.cpp
+    mantid/Types/src/Core/DateAndTimeHelpers.cpp
+    mantid/Types/src/Event/TofEvent.cpp)
 
+add_executable(simplevec simplevec.cpp ${KERNEL_FILES})
 target_include_directories(simplevec PRIVATE mantid/Kernel/inc/)
+
+add_executable(tofevent_classic tofevent_classic.cpp ${KERNEL_FILES}
+                                ${TYPES_FILES})
+target_include_directories(tofevent_classic PRIVATE mantid/Kernel/inc/)
+target_include_directories(tofevent_classic PRIVATE mantid/Types/inc/)
 
 add_executable(pushback pushback.cpp)
 
