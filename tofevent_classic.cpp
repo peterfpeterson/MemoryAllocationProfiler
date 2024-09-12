@@ -19,41 +19,43 @@ using Mantid::Kernel::MemoryStats;
 using Mantid::Kernel::Timer;
 using Mantid::Types::Event::TofEvent;
 using std::cout;
-using std::endl;
 using std::string;
 
 int main(int argc, char *argv[]) {
   constexpr int sleeptime{2};
 
-  // constexpr std::size_t VECTOR_LENGTH = 3000000000; value from simplevec
-  // this is roughly 30GB
-  constexpr std::size_t VECTOR_LENGTH = 2000000000;
+  // this tops out at roughly 30GB
+  std::vector<std::size_t> VECTOR_LENGTH{100000, 1000000, 10000000, 100000000, 1000000000, 2000000000};
 
   CPUTimer timer;
   MemoryStats memory;
 
-  // reserve memory
-  auto *buffer = new std::vector<TofEvent>();
-  buffer->reserve(VECTOR_LENGTH);
-  memory.update();
-  cout << "Allocate: " << timer << "\n" << memory << "\n";
+  for (auto const length : VECTOR_LENGTH) {
+    std::cout << "VECTOR SIZE = " << length << "\n";
+    // reserve memory
+    auto *buffer = new std::vector<TofEvent>();
+    buffer->reserve(length);
+    memory.update();
+    cout << "Allocate: " << timer << "\n" << memory << std::endl;
 
-  sleep(sleeptime);
-  timer.reset();
+    sleep(sleeptime);
+    timer.reset();
 
-  // fill up the vector
-  for (std::size_t n = 0; n < VECTOR_LENGTH; n++)
-    buffer->emplace_back(0, 0);
-  memory.update();
-  cout << "Fill: " << timer << "\n" << memory << "\n";
-  sleep(sleeptime);
-  timer.reset();
+    // fill up the vector
+    for (std::size_t n = 0; n < length; n++)
+      buffer->emplace_back(0, 0);
+    memory.update();
+    cout << "Fill: " << timer << "\n" << memory << "\n";
+    sleep(sleeptime);
+    timer.reset();
 
-  // free memory
-  delete buffer;
+    // free memory
+    delete buffer;
 
-  memory.update();
-  cout << "Free: " << timer << "\n" << memory << "\n";
-  timer.reset();
+    memory.update();
+    cout << "Free: " << timer << "\n" << memory << std::endl;
+    timer.reset();
+  }
+
   return 0;
 }

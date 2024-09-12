@@ -23,37 +23,42 @@ using std::string;
 int main(int argc, char *argv[]) {
   constexpr int sleeptime{2};
 
-  constexpr std::size_t VECTOR_LENGTH = 3000000000;
+  std::vector<std::size_t> const VECTOR_LENGTH{1000000,    1000000,    10000000,  100000000,
+                                               1000000000, 2000000000, 3000000000};
 
   CPUTimer timer;
   MemoryStats memory;
-  // buffer = (char*) malloc (i);
-  // if (buffer==NULL) exit (1);
-  auto *buffer = new std::vector<uint8_t>();
-  buffer->resize(VECTOR_LENGTH);
 
-  memory.update();
-  cout << "Allocate: " << timer << "\n" << memory << "\n";
+  for (auto const length : VECTOR_LENGTH) {
+    std::cout << "VECTOR SIZE = " << length << "\n";
 
-  sleep(sleeptime);
-  timer.reset();
+    // pulsetime is int64_t, tof is double
+    auto *buffer = new std::vector<int64_t>();
+    buffer->resize(length);
 
-  for (std::size_t n = 0; n < VECTOR_LENGTH; n++)
-    buffer->emplace_back(0); // static_cast<uint8_t>(rand()%256));
+    memory.update();
+    cout << "Allocate: " << timer << "\n" << memory << std::endl;
 
-  memory.update();
-  cout << "Fill: " << timer << "\n" << memory << "\n";
-  sleep(sleeptime);
-  timer.reset();
+    sleep(sleeptime);
+    timer.reset();
 
-  // printf ("Random string: %s\n",buffer);
-  // free (buffer);
+    for (std::size_t n = 0; n < length; n++)
+      buffer->emplace_back(0); // static_cast<uint8_t>(rand()%256));
 
-  delete buffer;
+    memory.update();
+    cout << "Fill: " << timer << "\n" << memory << "\n";
+    sleep(sleeptime);
+    timer.reset();
 
-  memory.update();
-  cout << "Free: " << timer << "\n" << memory << "\n";
-  timer.reset();
+    // printf ("Random string: %s\n",buffer);
+    // free (buffer);
+
+    delete buffer;
+
+    memory.update();
+    cout << "Free: " << timer << "\n" << memory << std::endl;
+    timer.reset();
+  }
 
   return 0;
 }
