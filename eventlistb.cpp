@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
   constexpr int sleeptime{2};
 
   // this tops out at roughly 30GB
-  std::vector<std::size_t> VECTOR_LENGTH{100000, 1000000, 10000000, 100000000, 1000000000, 2000000000};
+  std::vector<std::size_t> VECTOR_LENGTH{100000, 1000000, 10000000, 100000000, 1000000000, 2000000000, 3000000000};
   constexpr size_t EVENTS_PER_PULSE{1000}; // estimated from VULCAN_217967
 
   CPUTimer timer;
