@@ -37,6 +37,14 @@ add_executable(tofevent_classic tofevent_classic.cpp ${KERNEL_FILES}
 target_include_directories(tofevent_classic PRIVATE mantid/Kernel/inc/)
 target_include_directories(tofevent_classic PRIVATE mantid/Types/inc/)
 
+add_executable(
+  tofevent_int64
+  tofevent_int64.cpp mantid/Types/src/Event/TofEventInt64.cpp
+  mantid/Types/inc/MantidTypes/Event/TofEventInt64.h ${KERNEL_FILES}
+  ${TYPES_FILES})
+target_include_directories(tofevent_int64 PRIVATE mantid/Kernel/inc/)
+target_include_directories(tofevent_int64 PRIVATE mantid/Types/inc/)
+
 add_executable(pushback pushback.cpp)
 
 add_executable(nexusopenclose nexusopenclose.cpp)
