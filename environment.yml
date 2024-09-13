@@ -8,8 +8,10 @@ dependencies:
   - ccache
   - cmake>=3.21
   - hdf5>1.14.0,<1.15 # gets libcurl>=8.4
+  - ipython
   - jemalloc=5.2.0 # We have noticed 5.2.1 can cause a hang on older glibc versions (Cent OS 7, Ubuntu 18.04). Observed with import CaChannel and also our MeierTest.
   - libboost-devel=1.84.* # Use the same version as conda-forge
+  - matplotlib
   - nexus=4.4.*
   - ninja>=1.10.2
   - pre-commit
