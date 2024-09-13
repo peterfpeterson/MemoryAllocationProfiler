@@ -29,14 +29,22 @@ set(TYPES_FILES
     mantid/Types/src/Core/DateAndTimeHelpers.cpp
     mantid/Types/src/Event/TofEvent.cpp)
 
+#
+add_executable(eventlistb eventlistb.cpp ${KERNEL_FILES} ${TYPES_FILES})
+target_include_directories(eventlistb PRIVATE mantid/Kernel/inc/)
+target_include_directories(eventlistb PRIVATE mantid/Types/inc/)
+
+#
 add_executable(simplevec simplevec.cpp ${KERNEL_FILES})
 target_include_directories(simplevec PRIVATE mantid/Kernel/inc/)
 
+#
 add_executable(tofevent_classic tofevent_classic.cpp ${KERNEL_FILES}
                                 ${TYPES_FILES})
 target_include_directories(tofevent_classic PRIVATE mantid/Kernel/inc/)
 target_include_directories(tofevent_classic PRIVATE mantid/Types/inc/)
 
+#
 add_executable(
   tofevent_int64
   tofevent_int64.cpp mantid/Types/src/Event/TofEventInt64.cpp
@@ -47,5 +55,6 @@ target_include_directories(tofevent_int64 PRIVATE mantid/Types/inc/)
 
 add_executable(pushback pushback.cpp)
 
+#
 add_executable(nexusopenclose nexusopenclose.cpp)
 target_link_libraries(nexusopenclose PRIVATE Nexus::nexus Nexus::nexuscpp)
