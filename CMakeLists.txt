@@ -58,3 +58,7 @@ add_executable(pushback pushback.cpp)
 #
 add_executable(nexusopenclose nexusopenclose.cpp)
 target_link_libraries(nexusopenclose PRIVATE Nexus::nexus Nexus::nexuscpp)
+
+#
+add_executable(eventlistb2 eventlistb2.cpp)
+target_link_libraries(eventlistb2 PRIVATE Nexus::nexus Nexus::nexuscpp)
